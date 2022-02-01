@@ -27,10 +27,10 @@ We found that the motor and controller worked at periods of 7ms and smaller. 8ms
 
 Once that was working, we modified the controller task to output to the serial terminal so we could record and graph the data.
 
-	##### Step Response 7ms Period
+##### Step Response 7ms Period
 ![Graph go here](./Lab3Graph1Prototype.png)
 
-	##### Step Response 1ms Period
+##### Step Response 1ms Period
 ![Graph go here 2](./Lab3Graph2Prototype.png)
 
 #### Testing with Two Motors
@@ -46,8 +46,8 @@ When one of the motor tasks was run too slowly, it became unstable.
 Because the two motors were at the same priority and separated into tasks, the one unstable motor did not block the correctly tuned motor. 
 We found experimetally that **1ms** was the ideal speed for running the motor tasks. As seen in the step response plots, the 1ms period response settles much faster and has minimal extra overshoot.
 
-	##### Step Response 7ms Period
+##### Step Response 7ms Period
 ![Graph go here](./Lab3Graph1Prototype.png)
 
-	##### Step Response 1ms Period
+##### Step Response 1ms Period
 ![Graph go here 2](./Lab3Graph2Prototype.png)
