@@ -1,14 +1,14 @@
-"""!
-@file basic_tasks.py
-    This file contains a demonstration program that runs some tasks, an
-    inter-task shared variable, and a queue. The tasks don't really @b do
-    anything; the example just shows how these elements are created and run.
-
-@author JR Ridgely
-@date   2021-Dec-15 JRR Created from the remains of previous example
-@copyright (c) 2015-2021 by JR Ridgely and released under the GNU
-    Public License, Version 2. 
-"""
+'''!
+@file main.py
+    This file contains a modified version of JR Ridgely's
+    basic_task.py (https://github.com/spluttflob/ME405-Support)
+    that creates tasks for running two seperate motors step responses at
+    the same time
+@author Lucas Sandsor
+@author Jack Barone
+@author Jack Meyers
+@date 1-Feb-2022
+'''
 
 import gc
 import pyb
@@ -22,7 +22,8 @@ import utime
 
 def task1_encoder ():
     """!
-    runs the enoder value
+    This task creates a driver for one of the encoders being used.
+    It puts the curent value of the encoder into a share to be used by other tasks
     """
     enc = encoderDriver.EncoderDriver(pyb.Pin.board.PB6,pyb.Pin.board.PB7, 4)
     while True:
@@ -32,6 +33,8 @@ def task1_encoder ():
         
 def task2_motor ():
     """!
+    This task creates a driver for one of the motors being used.
+    It puts the current duty cycle of the motor into a share to be used by other tasks
     """
     moe = motorDriver.MotorDriver(pyb.Pin.board.PA10,
         pyb.Pin.board.PB4, pyb.Pin.board.PB5, 3)
@@ -41,12 +44,16 @@ def task2_motor ():
         
 def task3_control ():
     """!
+    This task creates a controller for using the shared encoder
+    value and uses it to adjust the speed of a motor to get to a desired position
+    given by the user. It also stores the time and ticks of an encoder for outside
+    analysis
     """
     start_time = utime.ticks_ms();
     controller = controls.Controls(8192, 2000/8192, 0)
     while True:
-        #possible old code: controller.controlLoop(share_enc.get())
         share_motor1.put(controller.controlLoop(share_enc1.get()))
+        # Next 4 lines of code are used for storing encoder values for anaylsis
         if(share_enc1.get()!= 0):
             print(utime.ticks_diff(utime.ticks_ms(), start_time), end=",")
             print(share_enc1.get())
@@ -56,7 +63,8 @@ def task3_control ():
         
 def task4_encoder ():
     """!
-    
+    This task creates a driver for one of the encoders being used.
+    It puts the curent value of the encoder into a share to be used by other tasks
     """
     enc = encoderDriver.EncoderDriver(pyb.Pin.board.PC6,pyb.Pin.board.PC7, 8)
     while True:
@@ -66,8 +74,8 @@ def task4_encoder ():
         
 def task5_motor ():
     """!
-    Creates a motor driver for the second motor and creates a shared value
-    for the duty cycle of the second motor.
+    This task creates a driver for one of the motors being used.
+    It puts the current duty cycle of the motor into a share to be used by other tasks
     """
     moe = motorDriver.MotorDriver(pyb.Pin.board.PC1,
         pyb.Pin.board.PA0, pyb.Pin.board.A1, 5)
@@ -77,33 +85,30 @@ def task5_motor ():
         
 def task6_control ():
     """!
-    A controller for the second motor
+    This task creates a controller for using the shared encoder
+    value and uses it to adjust the speed of a motor to get to a desired position
+    given by the user. It also stores the time and ticks of an encoder for outside
+    analysis
     """
-    start_time = utime.ticks_ms();
     controller = controls.Controls(8192, 2000/8192, 0)
     while True:
-        #possible useful old code: controller.controlLoop(share_enc.get())
         share_motor2.put(controller.controlLoop(share_enc2.get()))
         yield(0)
 
-"""! This code creates a share, a queue, and two tasks, then starts the tasks. The
-     tasks run until somebody presses ENTER, at which time the scheduler stops and
-     printouts show diagnostic information about the tasks, share, and queue."""
+"""! This main code creates multiple shares for the two motor duty cycles and encoder ticks.
+     It then adds the tasks to cotask to be ran. The tasks run until somebody presses ENTER, at
+     which time the scheduler stops and printouts show diagnostic information about the
+     tasks and shares"""
 if __name__ == "__main__":
-    print ('\033[2JTesting ME405 stuff in cotask.py and task_share.py\r\n'
-           'Press ENTER to stop and show diagnostics.')
-
-    # Create a share and a queue to test function and diagnostic printouts
+    
+    # Creates four shares for properly running the two motor step responses
     share_enc1 = task_share.Share ('i', thread_protect = False, name = "Share Encoder")
     share_motor1 = task_share.Share ('f', thread_protect = False, name = "Share Motor")
     share_enc2 = task_share.Share ('i', thread_protect = False, name = "Share Encoder")
     share_motor2 = task_share.Share ('f', thread_protect = False, name = "Share Motor")
     
 
-    # Create the tasks. If trace is enabled for any task, memory will be
-    # allocated for state transition tracing, and the application will run out
-    # of memory after a while and quit. Therefore, use tracing only for 
-    # debugging and set trace to False when it's not needed
+    # Create the tasks with appropriate priorities and names
     task1 = cotask.Task (task1_encoder, name = 'Encoder1', priority = 2, 
                          period = 10, profile = True, trace = False)
     task2 = cotask.Task (task2_motor, name = 'Motor1', priority = 1, 
@@ -131,7 +136,7 @@ if __name__ == "__main__":
     # character is received through the serial port
     vcp = pyb.USB_VCP ()
     while not vcp.any ():
-        cotask.task_list.pri_sched ()
+        cotask.task_list.pri_sched()
 
     # Empty the comm port buffer of the character(s) just pressed
     vcp.read ()
@@ -140,5 +145,4 @@ if __name__ == "__main__":
     # Print a table of task data and a table of shared information data
     print ('\n' + str (cotask.task_list))
     print (task_share.show_all ())
-    print (task1.get_trace ())
     print ('\r\n')

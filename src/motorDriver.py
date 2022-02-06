@@ -16,11 +16,13 @@ class MotorDriver:
     def __init__ (self, en_pin, in1pin, in2pin, timer):
         '''!
         Creates a motor driver by initializing GPIO
-        pins and turning motor off
-        @param en_pin The enable pin for the motor
-        @param in1pin Input pin 1 for driving the motor forwards
-        @param in2pin Input pin 2 for driving the motor backwards
-        @param timer The number of the timer to use (channels 1 and 2) 
+        pins and turning motor on and off
+        @param en_pin    The pin to enable movement for the motor
+        @param in1pin    Input pin 1 for driving the motor forwards
+        @param in2pin    Input pin 2 for driving the motor backwards 
+        @param timer    The numierc value for the timer on the STM32
+        that works in PWM mode that allows us to supply a duty cycle
+        to the motor via PWM signal
         '''
         #print("Creating a motor driver")
         self.pinEN = pyb.Pin (en_pin, pyb.Pin.OUT_PP)
@@ -36,10 +38,10 @@ class MotorDriver:
         '''!
         This method sets duty cycle of motor to a certain
         level. Positive cuase torque in one direction and
-        negative causes torque in another
-        If the duty cycle is out of the acceptable range, it
-        will prin
-        @param level The duty cycle level to run the motor at (-100 to 100)
+        negative causes torque in another.If the duty cycle is out of
+        the acceptable range, it will go to the closest value
+        it can (100 if 105 is given)
+        @param level    The duty cycle level to run the motor at (-100 to 100)
         '''
         if(level > 100):
             #print ('Setting duty cycle to ' + str (100))

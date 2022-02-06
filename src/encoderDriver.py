@@ -21,8 +21,9 @@ class EncoderDriver:
         on the encoder measuring ticks
         @param in2pin    The input pin for a different scanner seperated
         by a half cycle from the other encoder 
-        @param timer     The timer on the STM32 that works in counter
-        mode that allows us to track ticks for the encoder
+        @param timer     The numierc value for the timer on the STM32
+        that works in counter mode that allows us to track ticks
+        for the encoder
         '''
         #print("Creating an encoder driver")
         self.period = 4000 - 1

@@ -5,13 +5,14 @@
     @author Lucas Sandsor
     @author Jack Barone
     @author Jackson Myers
-    @date 25-Jan-2022 
+    @date 1-Feb-2022 
 """
 from matplotlib import pyplot
 import serial
 
 def isnum(string):
-    '''!Tries to convert a string to a number
+    '''!
+        Tries to convert a string to a number via a try except block
         @param string    A string to be converted to a float
         @return    Returns a boolean that is true if the string
         can be converted to a number and false if it cannot
@@ -25,17 +26,12 @@ def isnum(string):
 def serialHandler():
     '''!@brief A program to handle the serial input and output 
         @detail Program handles serial communication and prints
-        a nice graph to visualize the runtime movement of the motor
-        Sends a s for 'serial run', and then sends a c to stop the program
-        get the encoder values and time over serial
+        a nice graph to visualize the runtime movement of the motor.
+        User/device must send a manual eof to signal end of data
     '''
     time_list = []
     tick_list = []
     with serial.Serial('COM4', 115200) as s_port:
-        '''s_port.write(b's')
-        s_port.write(b'\r')
-        s_port.write(b'c')
-        s_port.write(b'\r')'''
         for line in s_port:
             #manually sent EOF needed because serial port doesn't have EOF
             if b'EOF' in line:
