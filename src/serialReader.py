@@ -1,5 +1,5 @@
 """!@file main.py
-    This file contains all the funcitons printing out
+    This file contains all the functions printing out
     a graph of the encoder position to help us visualize
     the runtime nature of the motor
     @author Lucas Sandsor

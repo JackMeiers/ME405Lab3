@@ -2,7 +2,7 @@
 @file main.py
     This file contains a modified version of JR Ridgely's
     basic_task.py (https://github.com/spluttflob/ME405-Support)
-    that creates tasks for running two seperate motors step responses at
+    that creates tasks for running two separate motors step responses at
     the same time
 @author Lucas Sandsor
 @author Jack Barone
